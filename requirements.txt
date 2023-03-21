@@ -1,0 +1,12 @@
+# Local package 
+-e .
+
+# Other dependencies
+numpy
+pandas
+jupyter
+matplotlib
+seaborn
+tensorboard
+tqdm
+scikit-learn
