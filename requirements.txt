@@ -10,3 +10,7 @@ seaborn
 tensorboard
 tqdm
 scikit-learn
+
+# Version control
+dvc
+dvc[gdrive]
