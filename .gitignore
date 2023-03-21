@@ -104,7 +104,8 @@ wandb/
 .hydra/
 
 # Venv on Ubuntu
-dtu_mlops/
+venv/
+xai_project/
 
 # Torch files
 *.pth
