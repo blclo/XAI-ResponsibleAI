@@ -2,10 +2,11 @@ from typing import Optional
 
 from pathlib import Path
 
-import torch
-from torch.utils.data import Dataset
 import numpy as np
 
+import torch
+from torch.utils.data import Dataset
+import torchvision.transforms as T
 
 class CUBDataset(Dataset):
     def __init__(self):
@@ -17,7 +18,24 @@ class CUBDataset(Dataset):
     def __getitem__(self, item):
         pass
 
-    def get_loaders(self): 
+    def get_loaders(self):
+        
+        # TODO: get splits
+        train_split, val_split, test_split = ?
+
+        # TODO: get stats of train data
+        mean_, std_ = train_split.images.mean(axis=...), train_split.images.std(axis=...)
+
+        self.normalizer = T.Compose(
+            [
+                T.Normalize(
+                    mean=[..., ..., ...],
+                    std=[..., ..., ...],
+                )
+            ]
+        )
+
+        self.normalizer(train_split.images)
         pass
 
 
