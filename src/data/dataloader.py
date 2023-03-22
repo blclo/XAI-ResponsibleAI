@@ -6,6 +6,23 @@ import torch
 from torch.utils.data import Dataset
 import numpy as np
 
+
+class CUBDataset(Dataset):
+    def __init__(self):
+        pass
+
+    def __len__(self):
+        pass
+
+    def __getitem__(self, item):
+        pass
+
+    def get_loaders(self): 
+        pass
+
+
+
+
 # class CatalanJuvenileJustice(Dataset):
     
 #     def __init__(
@@ -46,6 +63,7 @@ import numpy as np
 #             "sensitive_data": self.sensitive_data[item, :]
 #         }
 
+#       
 #     def get_loaders(
 #         self,
 #         batch_size: int,
