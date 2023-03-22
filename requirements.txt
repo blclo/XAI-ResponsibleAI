@@ -10,6 +10,8 @@ seaborn
 tensorboard
 tqdm
 scikit-learn
+Pillow
+
 
 # Version control
 dvc
