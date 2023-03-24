@@ -6,9 +6,9 @@ Special course in Responsible AI @ DTU
 
 ## Setup
 
+### Create environment
 Clone the repository and create a virtual environment (with Python 3.10). A pre-defined environment running with CUDA 11.6 can be created like:
 
-### Create environment
 Run the following:
 
 ```
@@ -19,6 +19,14 @@ conda activate xai_project
 Install the dependencies:
 ```
 pip install -r requirements.txt
+```
+
+### Data
+
+Download the data with `dvc`:
+
+``` 
+dvc pull
 ```
 
 #### PyTorch - CPU

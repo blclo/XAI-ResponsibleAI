@@ -104,7 +104,8 @@ wandb/
 .hydra/
 
 # Venv on Ubuntu
-dtu_mlops/
+venv/
+xai_project/
 
 # Torch files
 *.pth
@@ -113,3 +114,5 @@ dtu_mlops/
 
 # html
 *.html
+
+libgit2-1.5.0/
