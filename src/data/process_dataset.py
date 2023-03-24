@@ -22,8 +22,8 @@ def get_meta(data_path):
 
         info_ = [line.split() for line in lines]
 
-    idx2label = {int(class_idx): label for class_idx, label in info_}
-    label2idx = {label: int(class_idx) for class_idx, label in info_}
+    idx2label = {int(class_idx)-1: label for class_idx, label in info_}
+    label2idx = {label: int(class_idx)-1 for class_idx, label in info_}
     return idx2label, label2idx
 
 def load_txt_files(data_path):
@@ -152,11 +152,15 @@ def create_pickle_files(data_path: Path, output_filename: str, output_path: Path
             test_images.append(preprocess(img))
             test_img_paths.append(row['image_path'])
 
-    # Stack images
+    # Stack images and labels
     train_images = torch.stack(train_images)
     val_images = torch.stack(val_images)
     test_images = torch.stack(test_images)
 
+    train_labels = torch.tensor(train_labels) - 1
+    val_labels = torch.tensor(val_labels) - 1
+    test_labels = torch.tensor(test_labels) - 1
+    
     print(f"\n{'-'*50}\nDATASET SPLITS\n{'-'*50}")
     print(f"INFO - Training set: {train_images.__len__() / df.__len__()}")
     print(f"INFO - Validation set: {val_images.__len__() / df.__len__()}")
@@ -166,9 +170,9 @@ def create_pickle_files(data_path: Path, output_filename: str, output_path: Path
     # Do a visual inspection to see if the loading of files works
     if show_examples:
         N = 10
-        plot_example_images(train_images, train_labels, N, target_size, idx2label, type='TRAIN-', output_path=output_path)
-        plot_example_images(val_images, val_labels, N, target_size, idx2label, type='VALIDATION-', output_path=output_path)
-        plot_example_images(test_images, test_labels, N, target_size, idx2label, type='TEST-', output_path=output_path)
+        plot_example_images(train_images, train_labels.numpy(), N, target_size, idx2label, type='TRAIN-', output_path=output_path)
+        plot_example_images(val_images, val_labels.numpy(), N, target_size, idx2label, type='VALIDATION-', output_path=output_path)
+        plot_example_images(test_images, test_labels.numpy(), N, target_size, idx2label, type='TEST-', output_path=output_path)
 
 
     ### Normalization ### 
