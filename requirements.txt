@@ -11,7 +11,7 @@ tensorboard
 tqdm
 scikit-learn
 Pillow
-
+pathlib2
 
 # Version control
 dvc
