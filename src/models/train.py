@@ -3,6 +3,7 @@
 
 import os
 from pathlib2 import Path
+import torch.nn.functional as F
 
 from torch.utils.tensorboard import SummaryWriter
 import torch
@@ -57,11 +58,21 @@ def train(
             for batch in iter(loaders['train']):
                 # Extract data                
                 inputs, labels = batch['image'].to(device), batch['label'].to(device)
-                
+
+                if model_name == 'Inception3':
+                    print("INFO - Resizing input tensor to (224, 224) for Inception3 model...")
+                    # Resize the input tensor to a larger size
+                    inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+
                 # Zero the parameter gradients
                 optimizer.zero_grad()
                 # Forward + backward
                 outputs = model(inputs)
+
+                if model_name == 'Inception3':
+                    # Extract logits (tensor) from InceptionOutputs object
+                    outputs = outputs.logits
+                
                 loss = criterion(outputs, labels)
                 running_loss_train += loss.item()
                 loss.backward()
@@ -79,9 +90,17 @@ def train(
                 for batch in iter(loaders['validation']):
                     inputs, labels = batch['image'].to(device), batch['label'].to(device)
                     
+                    if model_name == 'Inception3':
+                        # Resize the input tensor to a larger size
+                        inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+
                     # Forward + backward
                     outputs = model(inputs)
                     preds = torch.exp(outputs).topk(1)[1]
+
+                    if model_name == 'Inception3':
+                        # Extract logits (tensor) from InceptionOutputs object
+                        outputs = outputs.logits
 
                     # Compute loss and accuracy
                     running_loss_val += criterion(outputs, labels)
@@ -149,11 +168,11 @@ if __name__ == '__main__':
 
     train(
         datafolder_path=datafolder_path,
-        model_name='ResNet18',
-        datafile_name='03-24-2023-processed_data_224x224.pth',
+        model_name='Inception3',
+        datafile_name='03-25-2023-processed_data_224x224.pth',
         batch_size=128,
         epochs=10,
         lr=1e-4,
-        experiment_name='ResNet18-test-10epochs',
+        experiment_name='Inception3-test-10epochs',
         save_path='models',
     )

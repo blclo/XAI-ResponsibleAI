@@ -20,7 +20,7 @@ class ResNet50(nn.Module):
         pass
 
 def get_model(model_name: str, lr: float, device):
-    if model_name not in ['ResNet18', 'ResNet50']:
+    if model_name not in ['ResNet18', 'ResNet50', 'Inception3']:
         raise NotImplementedError(f"No such model class exists... {(model_name)}")
     
     if model_name == 'ResNet50':
@@ -62,9 +62,24 @@ def get_model(model_name: str, lr: float, device):
         optimizer = optim.Adam(model.parameters(), lr=lr)
 
     elif model_name == 'Inception3':
-        model = inception_v3(pretrained=True)
-        raise NotImplementedError("TODO: Inception3")
-        
+        model = inception_v3(pretrained=True).to(device)
+
+        # Freeze weights
+        for param in model.parameters():
+            param.requires_grad = False
+
+        # Define output layers
+        num_ftrs = model.fc.in_features
+        model.fc = nn.Sequential(
+            nn.Linear(num_ftrs, 512),
+            nn.ReLU(),
+            nn.Linear(512, 200),
+            nn.LogSoftmax(dim=1)
+        ).to(device)
+
+        # Define loss criterion + optimizer --> NLLLoss used with LogSoftmax for stability reasons
+        criterion = nn.NLLLoss()
+        optimizer = optim.Adam(model.parameters(), lr=lr)
 
     return model, criterion, optimizer
 
