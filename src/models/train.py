@@ -60,7 +60,6 @@ def train(
                 inputs, labels = batch['image'].to(device), batch['label'].to(device)
 
                 if model_name == 'Inception3':
-                    print("INFO - Resizing input tensor to (224, 224) for Inception3 model...")
                     # Resize the input tensor to a larger size
                     inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
 
@@ -96,11 +95,12 @@ def train(
 
                     # Forward + backward
                     outputs = model(inputs)
-                    preds = torch.exp(outputs).topk(1)[1]
 
                     if model_name == 'Inception3':
                         # Extract logits (tensor) from InceptionOutputs object
                         outputs = outputs.logits
+
+                    preds = torch.exp(outputs).topk(1)[1]
 
                     # Compute loss and accuracy
                     running_loss_val += criterion(outputs, labels)
@@ -168,11 +168,11 @@ if __name__ == '__main__':
 
     train(
         datafolder_path=datafolder_path,
-        model_name='Inception3',
+        model_name='ResNet18',
         datafile_name='03-25-2023-processed_data_224x224.pth',
-        batch_size=128,
-        epochs=10,
-        lr=1e-4,
-        experiment_name='Inception3-test-10epochs',
+        batch_size=64,
+        epochs=50,
+        lr=1e-3,
+        experiment_name='ResNet18-test-50epochs-1e-3lr-bs64',
         save_path='models',
     )

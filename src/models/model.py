@@ -25,7 +25,8 @@ def get_model(model_name: str, lr: float, device):
     
     if model_name == 'ResNet50':
         model = resnet50(weights=ResNet50_Weights.DEFAULT).to(device)
-        
+        #model = resnet18(pretrained=True)
+        #model = resnet50(pretrained=True)
         # Freeze weights
         for param in model.parameters():
             param.requires_grad = False
