@@ -12,10 +12,8 @@ import time
 from tqdm import trange
 
 from src.models.model import get_model
-from src.data.dataloader import CUBDataset, get_loaders
-
-def set_seed(seed: int):
-    torch.manual_seed(seed)
+from src.models.utils import set_seed
+from src.data.dataloader import get_loaders
 
 #  ---------------  Training  ---------------
 def train(
@@ -62,6 +60,8 @@ def train(
                 if model_name == 'Inception3':
                     # Resize the input tensor to a larger size
                     inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+                    raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
+
 
                 # Zero the parameter gradients
                 optimizer.zero_grad()
@@ -71,6 +71,7 @@ def train(
                 if model_name == 'Inception3':
                     # Extract logits (tensor) from InceptionOutputs object
                     outputs = outputs.logits
+                    raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
                 
                 loss = criterion(outputs, labels)
                 running_loss_train += loss.item()
@@ -92,6 +93,7 @@ def train(
                     if model_name == 'Inception3':
                         # Resize the input tensor to a larger size
                         inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+                        raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
 
                     # Forward + backward
                     outputs = model(inputs)
@@ -99,6 +101,8 @@ def train(
                     if model_name == 'Inception3':
                         # Extract logits (tensor) from InceptionOutputs object
                         outputs = outputs.logits
+                        raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
+
 
                     preds = torch.exp(outputs).topk(1)[1]
 
