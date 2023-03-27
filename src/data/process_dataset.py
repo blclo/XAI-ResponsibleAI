@@ -2,6 +2,7 @@ from typing import Optional
 
 import os
 from pathlib2 import Path
+import os
 
 from datetime import datetime
 from tqdm import tqdm
@@ -77,6 +78,8 @@ def plot_example_images(images, labels, N, target_size, idx2label, type='TRAIN',
     
 def create_pickle_files(data_path: Path, output_filename: str, output_path: Path, target_size: int = 256, show_examples: bool = True, seed: int = 0):
     print("")
+
+    output_path = Path(output_path).resolve()
 
     seed = 42
     torch.manual_seed(seed)
@@ -244,11 +247,19 @@ def create_pickle_files(data_path: Path, output_filename: str, output_path: Path
     # Store as torch file    
     torch.save(data, filepath)
 
+    # Check if file exists
+    if os.path.isfile(filepath):
+        print(f"Data saved to {filepath}")
+    else:
+        print(f"Failed to save data to {filepath}")
+
 if __name__ == '__main__':
+    # Fix OMP initialization error
+    # os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
     # Specify input- and output paths
-    data_path = Path(r"C:\Users\alber\Desktop\DTU\2_HCAI\ResponsibleAI\projects\xai\XAI-ResponsibleAI\data\raw\CUB_200_2011\CUB_200_2011") 
-    output_path = Path(r"C:\Users\alber\Desktop\DTU\2_HCAI\ResponsibleAI\projects\xai\XAI-ResponsibleAI\data\processed\CUB_200_2011")
+    data_path = Path(r"C:\Users\carol\XAI-ResponsibleAI\data\raw\CUB_200_2011") 
+    output_path = Path(r"C:\Users\carol\XAI-ResponsibleAI\data\processed\CUB_200_2011")
 
     # Select filename
     target_size = 224

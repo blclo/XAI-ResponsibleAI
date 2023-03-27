@@ -3,6 +3,7 @@
 
 import os
 from pathlib2 import Path
+import torch.nn.functional as F
 
 from torch.utils.tensorboard import SummaryWriter
 import torch
@@ -11,10 +12,8 @@ import time
 from tqdm import trange
 
 from src.models.model import get_model
-from src.data.dataloader import CUBDataset, get_loaders
-
-def set_seed(seed: int):
-    torch.manual_seed(seed)
+from src.models.utils import set_seed
+from src.data.dataloader import get_loaders
 
 #  ---------------  Training  ---------------
 def train(
@@ -43,7 +42,7 @@ def train(
     print(f"INFO - using device: {device}")
 
     # Define the model, loss criterion and optimizer
-    model, criterion, optimizer = get_model(model_name, lr, device=device)
+    model, criterion, optimizer = get_model(model_name, lr=lr, device=device)
     
     print("CNN Architecture:")
     print(model)
@@ -57,11 +56,17 @@ def train(
             for batch in iter(loaders['train']):
                 # Extract data                
                 inputs, labels = batch['image'].to(device), batch['label'].to(device)
-                
+
+                # TODO: consider changing this to loading a datafile specifically created for Inception3
+                if model_name == 'Inception3':
+                    # Resize the input tensor to a larger size
+                    inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+
                 # Zero the parameter gradients
                 optimizer.zero_grad()
                 # Forward + backward
-                outputs = model(inputs)
+                outputs = model(inputs).logits if model_name == 'Inception3' else model(inputs)
+                
                 loss = criterion(outputs, labels)
                 running_loss_train += loss.item()
                 loss.backward()
@@ -79,8 +84,13 @@ def train(
                 for batch in iter(loaders['validation']):
                     inputs, labels = batch['image'].to(device), batch['label'].to(device)
                     
+                    # TODO: consider changing this to loading a datafile specifically created for Inception3
+                    if model_name == 'Inception3':
+                        # Resize the input tensor to a larger size
+                        inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
+
                     # Forward + backward
-                    outputs = model(inputs)
+                    outputs = model(inputs).logits if model_name == 'Inception3' else model(inputs)
                     preds = torch.exp(outputs).topk(1)[1]
 
                     # Compute loss and accuracy
@@ -143,17 +153,19 @@ def train(
 
 if __name__ == '__main__':
 
+    BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
+    #BASE_PATH = Path()
 
-    datafolder_path = Path('data/processed/CUB_200_2011')
-    save_path = Path('models')
+    datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
+    save_path = BASE_PATH / 'models'
 
     train(
         datafolder_path=datafolder_path,
-        model_name='ResNet18',
+        model_name='Inception3',
         datafile_name='03-24-2023-processed_data_224x224.pth',
-        batch_size=128,
-        epochs=10,
-        lr=1e-4,
-        experiment_name='ResNet18-test-10epochs',
-        save_path='models',
+        batch_size=64,
+        epochs=50,
+        lr=1e-3,
+        experiment_name='Inception-test-new-dummy',
+        save_path=save_path,
     )
