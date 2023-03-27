@@ -42,7 +42,7 @@ def train(
     print(f"INFO - using device: {device}")
 
     # Define the model, loss criterion and optimizer
-    model, criterion, optimizer = get_model(model_name, lr, device=device)
+    model, criterion, optimizer = get_model(model_name, lr=lr, device=device)
     
     print("CNN Architecture:")
     print(model)
@@ -173,10 +173,10 @@ if __name__ == '__main__':
     train(
         datafolder_path=datafolder_path,
         model_name='ResNet18',
-        datafile_name='03-25-2023-processed_data_224x224.pth',
+        datafile_name='03-24-2023-processed_data_224x224.pth',
         batch_size=64,
         epochs=50,
         lr=1e-3,
-        experiment_name='ResNet18-test-50epochs-1e-3lr-bs64',
+        experiment_name='ResNet18-test-new-dummy',
         save_path='models',
     )
