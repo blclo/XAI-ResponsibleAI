@@ -25,4 +25,4 @@ def load_experiment(experiment_path: Path, device):
     model, criterion = get_model(experiment['model']['name'], device=device)
     model.load_state_dict(experiment['state_dict'])
 
-    return model, criterion
+    return experiment['model']['name'], model, criterion

@@ -30,7 +30,7 @@ def test(
     print(f"INFO - using device: {device}")
 
     # Load experiment stored from training
-    model, criterion = load_experiment(experiment_path, device=device)
+    model_name, model, criterion = load_experiment(experiment_path, device=device)
     model.eval()
 
     print(model)
@@ -41,7 +41,7 @@ def test(
 
     # Testing loop
     with torch.no_grad():
-        for batch in tqdm(iter(loaders['test']), decs='Predicting on test set...'):
+        for batch in tqdm(iter(loaders['test']), desc='Predicting on test set...'):
             inputs, labels = batch['image'].to(device), batch['label'].to(device)
             
             # Forward + backward
@@ -63,11 +63,13 @@ if __name__ == '__main__':
 
     from pathlib2 import Path
 
-    #BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
+    # BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
     BASE_PATH = Path()
 
     datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
-    experiment_path = BASE_PATH / 'models/ResNet18-test-50epochs/best.ckpt'
+    
+    # experiment_path = BASE_PATH / 'models/ResNet18-test-50epochs/best.ckpt'
+    experiment_path = BASE_PATH / 'models/Inception-test-new-dummy/best.ckpt'
 
     # Run test
     test(

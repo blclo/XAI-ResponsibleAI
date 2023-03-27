@@ -57,21 +57,15 @@ def train(
                 # Extract data                
                 inputs, labels = batch['image'].to(device), batch['label'].to(device)
 
+                # TODO: consider changing this to loading a datafile specifically created for Inception3
                 if model_name == 'Inception3':
                     # Resize the input tensor to a larger size
                     inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
-                    raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
-
 
                 # Zero the parameter gradients
                 optimizer.zero_grad()
                 # Forward + backward
-                outputs = model(inputs)
-
-                if model_name == 'Inception3':
-                    # Extract logits (tensor) from InceptionOutputs object
-                    outputs = outputs.logits
-                    raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
+                outputs = model(inputs).logits if model_name == 'Inception3' else model(inputs)
                 
                 loss = criterion(outputs, labels)
                 running_loss_train += loss.item()
@@ -90,20 +84,13 @@ def train(
                 for batch in iter(loaders['validation']):
                     inputs, labels = batch['image'].to(device), batch['label'].to(device)
                     
+                    # TODO: consider changing this to loading a datafile specifically created for Inception3
                     if model_name == 'Inception3':
                         # Resize the input tensor to a larger size
                         inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
-                        raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
 
                     # Forward + backward
-                    outputs = model(inputs)
-
-                    if model_name == 'Inception3':
-                        # Extract logits (tensor) from InceptionOutputs object
-                        outputs = outputs.logits
-                        raise NotImplementedError("Checkout comment on pull request! @ albertkjoller")
-
-
+                    outputs = model(inputs).logits if model_name == 'Inception3' else model(inputs)
                     preds = torch.exp(outputs).topk(1)[1]
 
                     # Compute loss and accuracy
@@ -166,17 +153,19 @@ def train(
 
 if __name__ == '__main__':
 
+    BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
+    #BASE_PATH = Path()
 
-    datafolder_path = Path('data/processed/CUB_200_2011')
-    save_path = Path('models')
+    datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
+    save_path = BASE_PATH / 'models'
 
     train(
         datafolder_path=datafolder_path,
-        model_name='ResNet18',
+        model_name='Inception3',
         datafile_name='03-24-2023-processed_data_224x224.pth',
         batch_size=64,
         epochs=50,
         lr=1e-3,
-        experiment_name='ResNet18-test-new-dummy',
-        save_path='models',
+        experiment_name='Inception-test-new-dummy',
+        save_path=save_path,
     )

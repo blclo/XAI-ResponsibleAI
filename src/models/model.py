@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torchvision.models import resnet18, resnet50, inception_v3
-from torchvision.models import ResNet18_Weights, ResNet50_Weights
+from torchvision.models import ResNet18_Weights, ResNet50_Weights, Inception_V3_Weights
 
 def get_model(model_name: str, device, lr: Optional[float] = None):
     if model_name not in ['ResNet18', 'ResNet50', 'Inception3']:
@@ -17,7 +17,8 @@ def get_model(model_name: str, device, lr: Optional[float] = None):
         model = resnet18(weights=ResNet18_Weights.DEFAULT).to(device)
 
     elif model_name == 'Inception3':
-        model = inception_v3(pretrained=True).to(device)
+        model = inception_v3(weights=Inception_V3_Weights.DEFAULT).to(device)
+        # model = inception_v3(pretrained=True).to(device)
 
     # Freeze weights
     for param in model.parameters():
