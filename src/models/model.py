@@ -18,7 +18,6 @@ def get_model(model_name: str, device, lr: Optional[float] = None):
 
     elif model_name == 'Inception3':
         model = inception_v3(weights=Inception_V3_Weights.DEFAULT).to(device)
-        # model = inception_v3(pretrained=True).to(device)
 
     # Freeze weights
     for param in model.parameters():
@@ -38,8 +37,7 @@ def get_model(model_name: str, device, lr: Optional[float] = None):
 
     if lr is not None: # For training mode
         optimizer = optim.Adam(model.parameters(), lr=lr)
-        return model, criterion, optimizer
+        return model, criterion, optimizer, num_ftrs
     
     else: # For test mode
-        return model, criterion
-
+        return model, criterion, None, num_ftrs
