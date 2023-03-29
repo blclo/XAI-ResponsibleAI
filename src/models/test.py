@@ -7,35 +7,20 @@ from tqdm import tqdm
 from src.data.dataloader import get_loaders
 from src.models.utils import set_seed, load_experiment
 
-def test(
-        datafolder_path: str, datafile_name: str,
-        experiment_path: str,
-        batch_size: int = 128, num_workers: int = 1, 
+def test_model(
+        loaders: dict,
+        model, criterion,
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
         seed: int = 42,
     ):
     
     # Set seed
     set_seed(seed)
-    
-    # Get dataset splits
-    loaders, _ = get_loaders(
-        data_path=datafolder_path / datafile_name,
-        batch_size=batch_size, 
-        shuffle=True, 
-        num_workers=num_workers,
-    )
-
-    # Use gpu if available
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Device
     print(f"INFO - using device: {device}")
 
-    # Load experiment stored from training
-    model_name, model, criterion = load_experiment(experiment_path, device=device)
-    model.eval()
-
-    print(model)
-    
-    predictions = []
+    # Initialize storage parameters
+    predictions, probabilities, targets = [], [], []
     equals = []
     batch_losses = []
 
@@ -46,35 +31,44 @@ def test(
             
             # Forward + backward
             outputs = model(inputs)
-            preds = torch.exp(outputs).topk(1)[1]
+            probs = torch.exp(outputs)
+            preds = probs.topk(1)[1]
+
+            # Store predictions
+            probabilities.extend(probs)
             predictions.extend(preds)
+            targets.extend(labels)
 
             # Get predictions
             batch_losses.append(criterion(outputs, labels))
             equals.extend(preds.flatten() == labels)
 
-    print(f"\n{'-'*80}\nPERFORMANCE ON TEST SET\n{'-'*80}")
-    preds = torch.stack(equals).cpu().numpy()
-    acc, sem = preds.mean(), preds.std() / np.sqrt(preds.__len__())
+    print(f"{'-'*80}\nPERFORMANCE ON TEST SET\n{'-'*80}")
+    equals = torch.stack(equals).cpu().numpy()
+    acc, sem = equals.mean(), equals.std() / np.sqrt(equals.__len__())
     print(f"Avg. accuracy (with SEM) =  {acc:.5f} +- {sem:.5f}")
-    print(f"{'-'*80}\n")
+    print(f"{'-'*80}")
 
-if __name__ == '__main__':
+    return torch.stack(predictions), torch.stack(probabilities), torch.stack(targets)
 
-    from pathlib2 import Path
 
-    # BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
-    BASE_PATH = Path()
 
-    datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
+# if __name__ == '__main__':
+
+#     from pathlib2 import Path
+
+#     # BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
+#     BASE_PATH = Path()
+
+#     datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
     
-    # experiment_path = BASE_PATH / 'models/ResNet18-test-50epochs/best.ckpt'
-    experiment_path = BASE_PATH / 'models/Inception-test-new-dummy/best.ckpt'
+#     # experiment_path = BASE_PATH / 'models/ResNet18-test-50epochs/best.ckpt'
+#     experiment_path = BASE_PATH / 'models/Inception-test-new-dummy/best.ckpt'
 
-    # Run test
-    test(
-        datafolder_path=datafolder_path,
-        datafile_name='03-24-2023-processed_data_224x224.pth',
-        batch_size=64,
-        experiment_path=experiment_path,
-    )
+#     # Run test
+#     test_model(
+#         datafolder_path=datafolder_path,
+#         datafile_name='03-24-2023-processed_data_224x224.pth',
+#         batch_size=64,
+#         experiment_path=experiment_path,
+#     )
