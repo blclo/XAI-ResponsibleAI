@@ -20,12 +20,20 @@ def get_meta(data_path):
 
     with open(data_path / 'classes.txt', 'r') as file:
         lines = file.readlines()
-
         info_ = [line.split() for line in lines]
+
+    with open(data_path.parent / "attributes.txt", 'r') as file:
+        lines = file.readlines()
+        info_attr = [line.split() for line in lines]
+
 
     idx2label = {int(class_idx)-1: label for class_idx, label in info_}
     label2idx = {label: int(class_idx)-1 for class_idx, label in info_}
-    return idx2label, label2idx
+
+    idx2concept = {int(attr_idx)-1: concept for attr_idx, concept in info_attr}
+    concept2idx = {concept: int(attr_idx)-1 for attr_idx, concept in info_attr}
+
+    return {'classes': {'idx2label': idx2label, 'label2idx': label2idx}, 'concepts': {'idx2concept': idx2concept, 'concept2idx': concept2idx}}
 
 def load_txt_files(data_path):
     # Read the file
