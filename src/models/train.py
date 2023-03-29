@@ -13,11 +13,12 @@ from tqdm import trange
 
 from src.models.model import get_model
 from src.models.utils import set_seed
-from src.data.dataloader import get_loaders
+from src.data.dataloader import get_loaders, get_loaders_with_concepts
+from src.data.bottleneck_code.dataset import load_data
 
 #  ---------------  Training  ---------------
 def train(
-        datafolder_path: str, datafile_name: str,
+        datafolder_path: str, datafile_name: str, bottleneck_loaders: bool,
         model_name: str,
         batch_size: int = 128, num_workers: int = 1, lr=1e-4, epochs: int = 100, 
         experiment_name: str = str(int(round(time.time()))), save_path: str = '', 
@@ -29,21 +30,27 @@ def train(
     # Tensorboard writer for logging experiments
     writer = SummaryWriter(f"logs/{experiment_name}")
 
-    # Get dataset splits
-    loaders, normalization = get_loaders(
-        data_path=datafolder_path / datafile_name,
-        batch_size=batch_size, 
-        shuffle=True, 
-        num_workers=num_workers,
-    )
+    if not bottleneck_loaders:
+        # Get dataset splits
+        loaders, normalization = get_loaders(
+            data_path=datafolder_path / 'processed/CUB_200_2011' / datafile_name,
+            batch_size=batch_size, 
+            shuffle=True, 
+            num_workers=num_workers,
+        )
+    else:
+        loaders, normalization = get_loaders_with_concepts(
+            data_folder=datafolder_path,
+            batch_size=batch_size,
+        )
 
     # Use gpu if available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"INFO - using device: {device}")
 
     # Define the model, loss criterion and optimizer
-    model, criterion, optimizer = get_model(model_name, lr=lr, device=device)
-    
+    model, criterion, optimizer, _ = get_model(model_name, lr=lr, device=device)
+
     print("CNN Architecture:")
     print(model)
 
@@ -55,10 +62,13 @@ def train(
 
             for batch in iter(loaders['train']):
                 # Extract data                
-                inputs, labels = batch['image'].to(device), batch['label'].to(device)
+                if bottleneck_loaders:
+                    inputs, labels, concepts = batch
+                    inputs, labels, concepts = inputs.to(device), labels.to(device), torch.stack(concepts).T.to(device)
+                else:
+                    inputs, labels = batch['image'].to(device), batch['label'].to(device)
 
-                # TODO: consider changing this to loading a datafile specifically created for Inception3
-                if model_name == 'Inception3':
+                if model_name == 'Inception3' and not bottleneck_loaders:
                     # Resize the input tensor to a larger size
                     inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
 
@@ -66,7 +76,7 @@ def train(
                 optimizer.zero_grad()
                 # Forward + backward
                 outputs = model(inputs).logits if model_name == 'Inception3' else model(inputs)
-                
+
                 loss = criterion(outputs, labels)
                 running_loss_train += loss.item()
                 loss.backward()
@@ -82,10 +92,14 @@ def train(
             # Validation
             with torch.no_grad():
                 for batch in iter(loaders['validation']):
-                    inputs, labels = batch['image'].to(device), batch['label'].to(device)
-                    
-                    # TODO: consider changing this to loading a datafile specifically created for Inception3
-                    if model_name == 'Inception3':
+                    # Extract data                
+                    if bottleneck_loaders:
+                        inputs, labels, concepts = batch
+                        inputs, labels, concepts = inputs.to(device), labels.to(device), torch.stack(concepts).T.to(device)
+                    else:
+                        inputs, labels = batch['image'].to(device), batch['label'].to(device)
+
+                    if model_name == 'Inception3' and not bottleneck_loaders:
                         # Resize the input tensor to a larger size
                         inputs = F.interpolate(inputs, size=(299, 299), mode='bilinear', align_corners=True)
 
@@ -116,6 +130,7 @@ def train(
                         "device": device,
                     },
                     "data": {
+                        "bottleneck_loader": bottleneck_loaders,
                         "filename": datafile_name,
                         "normalization": {
                             "mu": list(normalization['mean'].numpy()),
@@ -153,19 +168,21 @@ def train(
 
 if __name__ == '__main__':
 
-    BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
-    #BASE_PATH = Path()
+    # BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
+    BASE_PATH = Path()
 
-    datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
+    datafolder_path = BASE_PATH / 'data'
     save_path = BASE_PATH / 'models'
 
     train(
         datafolder_path=datafolder_path,
+        # datafile_name='03-24-2023-processed_data_224x224.pth',
+        datafile_name='',
+        bottleneck_loaders=True,
         model_name='Inception3',
-        datafile_name='03-24-2023-processed_data_224x224.pth',
         batch_size=64,
         epochs=50,
-        lr=1e-3,
-        experiment_name='Inception-test-new-dummy',
+        lr=1e-4,
+        experiment_name='Inception3.50epochs.lr1e-4.bz64',
         save_path=save_path,
     )
