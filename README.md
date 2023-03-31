@@ -42,6 +42,12 @@ If running on GPU with CUDA 11.6 install Pytorch with the following command:
 pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 ```
 
+## Using the dataloader to set up the data
+To set up the required files for the training to run, run the ```bottleneck_code/data_processing.py``` file providing both, the data dir and the saving dir. An example can be seen bellow:
+```
+python ./src/data/bottleneck_code/data_processing.py -data_dir ./data/raw/CUB_200_2011 -save_dir ./data/processed/CUB_200_2011/bottleneck
+```
+
 ## Project Organization
 ------------
 
