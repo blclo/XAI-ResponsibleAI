@@ -59,8 +59,7 @@ Afterwards, run in your local one:
 ```
 ssh USER@l1.hpc.dtu.dk -g -L8080:n-62-20-1:40000 -N
 ```
-
-
+Open in your browser: http://localhost:8080/
 ## Project Organization
 ------------
 
