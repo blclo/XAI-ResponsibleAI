@@ -48,6 +48,19 @@ To set up the required files for the training to run, run the ```bottleneck_code
 python ./src/data/bottleneck_code/data_processing.py -data_dir ./data/raw/CUB_200_2011 -save_dir ./data/processed/CUB_200_2011/bottleneck
 ```
 
+## Using tensorboard in HPC
+Run the following in your HPC terminal:
+```
+tensorboard --logdir logs --port 40000 --host $HOSTNAME
+```
+At the end of the response you get something like this: TensorBoard 2.10.1 at http://n-62-20-1:40000/ (Press CTRL+C to quit)
+
+Afterwards, run in your local one:
+```
+ssh USER@l1.hpc.dtu.dk -g -L8080:n-62-20-1:40000 -N
+```
+
+
 ## Project Organization
 ------------
 
