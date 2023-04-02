@@ -27,7 +27,8 @@ def test_model(
     # Testing loop
     with torch.no_grad():
         for batch in tqdm(iter(loaders['test']), desc='Predicting on test set...'):
-            inputs, labels = batch['image'].to(device), batch['label'].to(device)
+            inputs, labels, concepts = batch
+            inputs, labels = inputs.to(device), labels.to(device)
             
             # Forward + backward
             outputs = model(inputs)

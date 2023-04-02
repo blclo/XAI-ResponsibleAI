@@ -59,7 +59,7 @@ def get_loaders(data_path: Path, batch_size: int = 128, shuffle: bool = True, nu
         )
     return loaders, normalization_vals
 
-def get_loaders_with_concepts(data_folder: Path, batch_size: int = 128):
+def get_loaders_with_concepts(raw_data_folder: Path, processed_data_folder: Path, batch_size: int = 128):
     # sourcery skip: dict-comprehension, inline-immediately-returned-variable
     print("INFO - Loading data...")
 
@@ -67,50 +67,41 @@ def get_loaders_with_concepts(data_folder: Path, batch_size: int = 128):
         'use_attr': True,
         'no_img': False,
         'batch_size': batch_size,
-        'uncertain_labels': False,
-        'image_dir': (data_folder / "raw/CUB_200_2011/CUB_200_2011/images").as_posix(),
-        'n_class_attr': 2,
-        'resampling': False,
+        'resol': 224,
     })
 
     # Specify paths
-    train_data_path = (data_folder / "processed/CUB_200_2011/bottleneck/train.pkl").as_posix()
-    val_data_path   = (data_folder / "processed/CUB_200_2011/bottleneck/val.pkl").as_posix()
-    test_data_path  = (data_folder / "processed/CUB_200_2011/bottleneck/test.pkl").as_posix()
+    train_data_path = (processed_data_folder / "train.pkl").as_posix()
+    val_data_path   = (processed_data_folder / "val.pkl").as_posix()
+    test_data_path  = (processed_data_folder / "test.pkl").as_posix()
 
     train_loader = load_data(
         [train_data_path], 
-        args.use_attr, 
-        args.no_img, 
-        args.batch_size, 
-        args.uncertain_labels, 
-        image_dir=args.image_dir,
-        n_class_attr=args.n_class_attr, 
-        resampling=args.resampling
+        use_attr=args.use_attr,
+        no_img=args.no_img,
+        batch_size=args.batch_size,
+        resol=args.resol,
+        image_dir=raw_data_folder,
     )
     print("INFO - training data loaded !")
 
     val_loader = load_data(
         [val_data_path], 
-        args.use_attr, 
-        args.no_img, 
-        args.batch_size, 
-        args.uncertain_labels, 
-        image_dir=args.image_dir,
-        n_class_attr=args.n_class_attr, 
-        resampling=args.resampling
+        use_attr=args.use_attr,
+        no_img=args.no_img,
+        batch_size=args.batch_size,
+        resol=args.resol,
+        image_dir=raw_data_folder,
     )
     print("INFO - validation data loaded !")
 
     test_loader = load_data(
         [test_data_path], 
-        args.use_attr, 
-        args.no_img, 
-        args.batch_size, 
-        args.uncertain_labels, 
-        image_dir=args.image_dir,
-        n_class_attr=args.n_class_attr, 
-        resampling=args.resampling
+        use_attr=args.use_attr,
+        no_img=args.no_img,
+        batch_size=args.batch_size,
+        resol=args.resol,
+        image_dir=raw_data_folder,
     )
     print("INFO - test data loaded !")
 

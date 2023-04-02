@@ -1,7 +1,7 @@
 import torch
 from pathlib2 import Path
 
-from src.models.model import get_model
+from .model import get_model
 
 def set_seed(seed: int):
     torch.manual_seed(seed)

@@ -33,7 +33,8 @@ def get_meta(data_path):
     idx2concept = {int(attr_idx)-1: concept for attr_idx, concept in info_attr}
     concept2idx = {concept: int(attr_idx)-1 for attr_idx, concept in info_attr}
 
-    return {'classes': {'idx2label': idx2label, 'label2idx': label2idx}, 'concepts': {'idx2concept': idx2concept, 'concept2idx': concept2idx}}
+    meta = {'classes': {'idx2label': idx2label, 'label2idx': label2idx}, 'concepts': {'idx2concept': idx2concept, 'concept2idx': concept2idx}}
+    return meta
 
 def load_txt_files(data_path):
     # Read the file
