@@ -6,7 +6,7 @@ import torch.optim as optim
 from torchvision.models import resnet18, resnet50, inception_v3
 from torchvision.models import ResNet18_Weights, ResNet50_Weights, Inception_V3_Weights
 
-def get_model(model_name: str, device, lr: Optional[float] = None, weight_decay=0.9, out_dim=200):
+def get_model(model_name: str, device, lr: Optional[float] = None, weight_decay=0.9, out_dim=200, freeze=False):
     """
 
     Args:
@@ -39,9 +39,9 @@ def get_model(model_name: str, device, lr: Optional[float] = None, weight_decay=
         else:
             raise NotImplementedError("Model type not available...")
         
-        # Freeze weights
-        # for param in model.parameters():
-        #    param.requires_grad = False
+        if freeze == True: # Freeze weights
+            for param in model.parameters():
+                param.requires_grad = False
 
         # Define output layers
         num_ftrs = model.fc.in_features
@@ -50,7 +50,7 @@ def get_model(model_name: str, device, lr: Optional[float] = None, weight_decay=
             nn.LogSoftmax(dim=1)
         ).to(device)
 
-    if experiment != None:
+    if experiment != None: # load from checkpoint
         model.load_state_dict(experiment['state_dict'])
 
     if lr is not None: # For training mode
@@ -60,6 +60,10 @@ def get_model(model_name: str, device, lr: Optional[float] = None, weight_decay=
     else: # For test mode
         return model, criterion, None, num_ftrs
 
+
+
+
+# TODO: Bottleneck - not necessary
 
 class CBM(nn.Module):
 

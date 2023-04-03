@@ -10,29 +10,6 @@ import torchvision.transforms as T
 
 from src.data.bottleneck_code.dataset import load_data
 
-class CUBDataset(Dataset):
-    def __init__(self, data: str, dtype: str = 'train'):
-        
-        self.dtype = dtype
-
-        self.images = data['images']
-        self.labels = data['labels']
-
-        # Number of classes in dataset
-        self.num_classes = self.labels.unique().__len__()
-
-    def __len__(self):
-        return self.labels.__len__()
-
-    def __getitem__(self, item):
-        return {
-            "image": self.images[item, :], 
-            "label": self.labels[item], 
-
-            #TODO: add concepts as meta data
-            #"concepts": self.concepts[item, :]
-        }
-
 def get_loaders(data_path: Path, batch_size: int = 128, shuffle: bool = True, num_workers: int = 1):
     # sourcery skip: dict-comprehension, inline-immediately-returned-variable
     print("INFO - Loading data...")
