@@ -51,25 +51,3 @@ def test_model(
     print(f"{'-'*80}")
 
     return torch.stack(predictions), torch.stack(probabilities), torch.stack(targets)
-
-
-
-# if __name__ == '__main__':
-
-#     from pathlib2 import Path
-
-#     # BASE_PATH = Path('projects/xai/XAI-ResponsibleAI')
-#     BASE_PATH = Path()
-
-#     datafolder_path = BASE_PATH / 'data/processed/CUB_200_2011'
-    
-#     # experiment_path = BASE_PATH / 'models/ResNet18-test-50epochs/best.ckpt'
-#     experiment_path = BASE_PATH / 'models/Inception-test-new-dummy/best.ckpt'
-
-#     # Run test
-#     test_model(
-#         datafolder_path=datafolder_path,
-#         datafile_name='03-24-2023-processed_data_224x224.pth',
-#         batch_size=64,
-#         experiment_path=experiment_path,
-#     )
