@@ -36,7 +36,7 @@ def get_loaders(data_path: Path, batch_size: int = 128, shuffle: bool = True, nu
         )
     return loaders, normalization_vals
 
-def get_loaders_with_concepts(raw_data_folder: Path, processed_data_folder: Path, batch_size: int = 128):
+def get_loaders_with_concepts(raw_data_folder: Path, processed_data_folder: Path, batch_size: int = 128, resol: int = 224):
     # sourcery skip: dict-comprehension, inline-immediately-returned-variable
     print("INFO - Loading data...")
 
@@ -44,7 +44,7 @@ def get_loaders_with_concepts(raw_data_folder: Path, processed_data_folder: Path
         'use_attr': True,
         'no_img': False,
         'batch_size': batch_size,
-        'resol': 224,
+        'resol': resol,
     })
 
     # Specify paths

@@ -18,7 +18,7 @@ def get_vizualisation_batch(loaders, preds, selected_idxs: list):
         batch['image'].append(img)
         batch['label'].append(lab)
         batch['prediction'].append(preds[i])
-        batch['concepts'].extend(concept)
+        batch['concepts'].append(concept)
 
     # Stack data
     batch['image'] = torch.stack(batch['image'])
