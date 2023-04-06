@@ -48,8 +48,8 @@ class CUBDataset(Dataset):
 
     def __getitem__(self, idx):
         img_data = self.data[idx]
-        img_path = img_data['img_path']
-        img = Image.open(img_path).convert('RGB')
+        img_path = self.image_dir / img_data['img_path'].split("datasets/")[1]
+        img = Image.open(img_path.as_posix()).convert('RGB')
 
         class_label = img_data['class_label']
         if self.transform:
