@@ -65,7 +65,14 @@ Open in your browser: http://localhost:8080/
 
     ├── README.md          <- The top-level README for developers using this project.
     ├── data
-    │   └── catalan_data_course            <- The original, immutable data dump.
+    │   └── processed
+    │   │   └── bottleneck
+    │   │       │                 
+    │   │       ├── test.pkl
+    │   │       ├── train.pkl
+    │   │       └── val.pkl
+    │   │   
+    |   └── raw/CUB_200_2011 <- The original, immutable data dump.
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
     ├── src                <- Source code for use in this project.
