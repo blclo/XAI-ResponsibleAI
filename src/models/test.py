@@ -24,7 +24,6 @@ def test_model(
     equals = []
     batch_losses = []
 
-    model.eval()
     # Testing loop
     with torch.no_grad():
         for batch in tqdm(iter(loaders['test']), desc='Predicting on test set...'):
