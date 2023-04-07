@@ -3,6 +3,7 @@ Project on XAI (Explainable AI)
 
 Special course in Responsible AI @ DTU
 
+![alt text](https://github.com/blclo/XAI-ResponsibleAI/blob/main/XAI_ResponsibleAI_poster.pp.pptx%20(1).png)
 
 ## Setup
 
